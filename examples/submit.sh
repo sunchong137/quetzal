@@ -8,10 +8,11 @@ while IFS= read -r line || [[ -n "$line" ]]; do
     echo
 
     sbatch <<EOF
+
 #!/bin/bash
 #SBATCH --nodes=1
 #SBATCH --gpus-per-node=1
-#SBATCH --partition=debug
+#SBATCH --partition=gpu
 #SBATCH --time=00:10:00
 #SBATCH --job-name=train
 #SBATCH --output=slurm/%j.out

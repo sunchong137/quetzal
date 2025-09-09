@@ -1,6 +1,8 @@
 # credit:
 # https://github.com/atomicarchitects/symphony/blob/590621f27fdf74d7ca13939185d9cfb1e881b775/symphony/data/datasets/qm9.py
 # https://github.com/atomicarchitects/symphony/blob/590621f27fdf74d7ca13939185d9cfb1e881b775/symphony/data/datasets/utils.py
+# Download QM9 dataset 
+# Adapted from https://github.com/atomicarchitects/symphony/
 
 import torch
 import os
