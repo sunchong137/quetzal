@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pluma"
+version = "0.0.1"
+description = "Autoregressive chemical generation"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "lightning==2.5.0.post0",
+  "rdkit==2023.03.3",
+  "ipywidgets",
+  "jupyter",
+  "scipy",
+  "numpy<2",
+  "matplotlib",
+  "tqdm",
+  "pandas",
+  "wandb==0.18.7",
+  "seaborn",
+  "msgpack",
+  "py3Dmol",
+  "torchdata",
+  "torch==2.6",
+]
+
+[tool.setuptools.packages]
+find = {}

@@ -6,3 +6,4 @@ trash/
 slurm/
 samples/
 checkpoints/
+*egg-info/
