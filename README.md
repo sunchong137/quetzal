@@ -7,20 +7,29 @@ Code for [Scalable Autoregressive 3D Molecule Generation](https://arxiv.org/abs/
 
 ![Animated Molecule Generation](figures/anim.gif)
 
-Setup:
-```
-mamba create -f environment.yml
-```
+### Installation:
+Clone this repository to your local server, and `cd quetzal`.
+First, create a conda environment either with `environment.yml`
 
-This environment was prepared via:
 ```
-mamba create -n quetzal python=3.10
-mamba activate quetzal
-mamba install c-compiler cxx-compiler # needed for torch.compile
+conda create -f environment.yml
+conda activate quetzal_env
+```
+Or by explicitly installing all the dependencies
+```
+conda create -n quetzal_env python=3.10
+conda activate quetzal_env
+conda install c-compiler cxx-compiler # needed for torch.compile
 pip install torch==2.6 lightning==2.5.0.post0 rdkit==2023.03.3 jupyter notebook ipywidgets scipy "numpy<2" matplotlib tqdm pandas wandb==0.18.7 seaborn msgpack py3Dmol torchdata
 ```
 
 `rdkit==2023.03.3` is important to have consistent validity metrics
+
+Next, install the quetzal package by
+```bash
+pip install -e .
+```
+### Setting up calculations
 
 Optional W&B setup:
 ```
