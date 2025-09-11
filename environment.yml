@@ -1,4 +1,4 @@
-name: pluma_env
+name: quetzal_env
 channels:
     - conda-forge
 dependencies:

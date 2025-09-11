@@ -18,7 +18,7 @@ import zipfile
 import tarfile
 import logging
 
-from chem import GEN, STOP
+from quetzal.chem import GEN, STOP
 
 def download_url(url: str, root: str) -> str:
     """Download if file does not exist in root already. Returns path to file."""
@@ -163,57 +163,58 @@ def get_qm9_splits(
 
 ####################################################################################################
 
-QM9_URL = (
-    "https://deepchemdata.s3-us-west-1.amazonaws.com/datasets/molnet_publish/qm9.zip"
-)
-
-root_dir = "data"
-if not os.path.exists(root_dir):
-    os.makedirs(root_dir, exist_ok=True)
-
-raw_mols_path = os.path.join(root_dir, "gdb9.sdf")
-
-if not os.path.exists(raw_mols_path):
-    path = download_url(QM9_URL, root_dir)
-    extract_zip(path, root_dir)
-
-if not os.path.exists(os.path.join(root_dir, "qm9_train_atoms.npy")):
-
-    supplier = Chem.SDMolSupplier(raw_mols_path, removeHs=False, sanitize=False)
-
-    all_coords = []
-    all_atoms = []
-    all_sizes = []
-
-    for mol in tqdm.tqdm(supplier):
-        if mol is None:
-            continue
-        
-        coords = np.array(mol.GetConformer().GetPositions(), dtype=np.float32)
-        atoms = np.array([atom.GetAtomicNum() for atom in mol.GetAtoms()], dtype=np.int64)
-
-        # zero-center coords and do PCA
-        coords -= coords.mean(0)
-        U, _, _ = np.linalg.svd(coords.T)
-        if np.linalg.det(U) < 0:
-            U[:, -1] *= -1
-        coords = coords @ U
-
-        size = atoms.shape[0]
-
-        all_atoms.append(atoms)
-        all_coords.append(coords)
-        all_sizes.append(size)
-
-    print("Saving...")
-
-    splits = get_qm9_splits(root_dir, edm_splits=True)
-
-    for split in splits:
-        atoms = np.concatenate([all_atoms[i] for i in splits[split]])
-        coords = np.concatenate([all_coords[i] for i in splits[split]])
-        sizes = np.array([all_sizes[i] for i in splits[split]])
-        
-        np.save(os.path.join(root_dir, f"qm9_{split}_atoms.npy"), atoms)
-        np.save(os.path.join(root_dir, f"qm9_{split}_coords.npy"), coords)
-        np.save(os.path.join(root_dir, f"qm9_{split}_sizes.npy"), sizes)
+def gen_qm9_data(root_dir: str):
+  
+    QM9_URL = (
+        "https://deepchemdata.s3-us-west-1.amazonaws.com/datasets/molnet_publish/qm9.zip"
+    )
+    
+    if not os.path.exists(root_dir):
+        os.makedirs(root_dir, exist_ok=True)
+    
+    raw_mols_path = os.path.join(root_dir, "gdb9.sdf")
+    
+    if not os.path.exists(raw_mols_path):
+        path = download_url(QM9_URL, root_dir)
+        extract_zip(path, root_dir)
+    
+    if not os.path.exists(os.path.join(root_dir, "qm9_train_atoms.npy")):
+    
+        supplier = Chem.SDMolSupplier(raw_mols_path, removeHs=False, sanitize=False)
+    
+        all_coords = []
+        all_atoms = []
+        all_sizes = []
+    
+        for mol in tqdm.tqdm(supplier):
+            if mol is None:
+                continue
+            
+            coords = np.array(mol.GetConformer().GetPositions(), dtype=np.float32)
+            atoms = np.array([atom.GetAtomicNum() for atom in mol.GetAtoms()], dtype=np.int64)
+    
+            # zero-center coords and do PCA
+            coords -= coords.mean(0)
+            U, _, _ = np.linalg.svd(coords.T)
+            if np.linalg.det(U) < 0:
+                U[:, -1] *= -1
+            coords = coords @ U
+    
+            size = atoms.shape[0]
+    
+            all_atoms.append(atoms)
+            all_coords.append(coords)
+            all_sizes.append(size)
+    
+        print("Saving...")
+    
+        splits = get_qm9_splits(root_dir, edm_splits=True)
+    
+        for split in splits:
+            atoms = np.concatenate([all_atoms[i] for i in splits[split]])
+            coords = np.concatenate([all_coords[i] for i in splits[split]])
+            sizes = np.array([all_sizes[i] for i in splits[split]])
+            
+            np.save(os.path.join(root_dir, f"qm9_{split}_atoms.npy"), atoms)
+            np.save(os.path.join(root_dir, f"qm9_{split}_coords.npy"), coords)
+            np.save(os.path.join(root_dir, f"qm9_{split}_sizes.npy"), sizes)
